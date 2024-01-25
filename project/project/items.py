@@ -10,5 +10,6 @@ class Manhwa(scrapy.Item):
     title = scrapy.Field()
     about = scrapy.Field()
     categories = scrapy.Field()
+    author = scrapy.Field()
 
     pass
