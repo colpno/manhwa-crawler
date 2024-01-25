@@ -58,8 +58,7 @@ class ManhwaSpider(scrapy.Spider):
         categories = []
         is_forbidden = False
         for item in category_list:
-            category = item.xpath(
-                './a/text()').get().replace("\n", "").rstrip().replace("..", ".")
+            category = item.xpath('./a/text()').get()
             if self.is_forbidden_category(category):
                 is_forbidden = True
                 break
@@ -67,16 +66,18 @@ class ManhwaSpider(scrapy.Spider):
         if is_forbidden:
             return
 
-        title = content_box.xpath(
-            './div[@class="main-head"]/h1/text()').get().replace("\n", "").rstrip().replace("..", ".")
+        title = content_box.xpath('./div[@class="main-head"]/h1/text()').get()
 
-        about = content_box.xpath(
-            'string(//div[@class="about"])').get().replace("\n", "").rstrip().replace("..", ".")
+        about = content_box.xpath('string(//div[@class="about"])').get()
+
+        author = content_box.xpath(
+            './/div[@class="author"]/span[@itemprop="author"]/text()')
 
         manhwa = Manhwa()
-        manhwa['title'] = title
-        manhwa['about'] = about
-        manhwa['categories'] = categories
+        manhwa['title'] = self.clean_string(title)
+        manhwa['about'] = self.clean_string(about)
+        manhwa['categories'] = self.clean_string(categories)
+        manhwa['author'] = self.clean_string(author)
 
         current_url = response.request.url
         image_folder = extract_filename_from_url(
@@ -116,7 +117,7 @@ class ManhwaSpider(scrapy.Spider):
             '//div[@class="chapter-content"]/div')[:20]
 
         for item in items:
-            image = item.xpath('./img/@src').get()
+            image = item.xpath('.//img/@src').get()
 
             yield scrapy.Request(
                 url=image,
@@ -149,3 +150,6 @@ class ManhwaSpider(scrapy.Spider):
             return True
         else:
             return False
+
+    def clean_string(self, string: str) -> str:
+        return string.replace("\n", "").replace('\"', "'").replace('"', "'").replace("  ", " ").rstrip(".").rstrip()
