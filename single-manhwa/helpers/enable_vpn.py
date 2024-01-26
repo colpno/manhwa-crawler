@@ -33,8 +33,7 @@ def is_displayed(driver: ChromeWebDriver, xpath: str, int=3):
 def re_run():
     running_file = os.path.abspath(f"{__file__}/../../main.py")
     env_dir = os.path.abspath(f"{__file__}/../../../env/bin/activate")
-    crawl_command = f'source {env_dir} && python3 {running_file}' + \
-        ' '.join(sys.argv[1:])
+    crawl_command = f'python3 {running_file} ' + ' '.join(sys.argv[1:])
     subprocess.run(crawl_command, shell=False)
 
 
@@ -57,10 +56,11 @@ def enable_vpn(driver: ChromeWebDriver):
                 driver, "//div[@id='ConnectionButton']/span[contains(text(), 'Stop')]")
 
             if is_displayed(driver, "//div[@id='ConnectionButton']/span[contains(text(), 'Stop')]") == True:
+                print("Enabled VPN")
                 return driver
             else:
                 re_run()
         else:
             re_run()
     except:
-        pass
+        re_run()
