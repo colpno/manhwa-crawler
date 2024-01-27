@@ -3,6 +3,7 @@ import os
 import sys
 import time
 
+from helpers.execute_command import pipeline
 from selenium.webdriver.chrome.webdriver import WebDriver as ChromeWebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as DriverConditions
@@ -31,10 +32,12 @@ def is_displayed(driver: ChromeWebDriver, xpath: str, int=3):
 
 
 def re_run():
+    print("re-run")
     running_file = os.path.abspath(f"{__file__}/../../main.py")
     env_dir = os.path.abspath(f"{__file__}/../../../env/bin/activate")
-    crawl_command = f'python3 {running_file} ' + ' '.join(sys.argv[1:])
-    subprocess.run(crawl_command, shell=False)
+    # crawl_command = f'source {env_dir} && python3 {running_file} ' + ' '.join(sys.argv[1:])
+    # subprocess.run(crawl_command, shell=False)
+    pipeline(f'python3 {running_file} ' + ' '.join(sys.argv[1:]))
 
 
 def enable_vpn(driver: ChromeWebDriver):
